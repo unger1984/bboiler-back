@@ -16,5 +16,5 @@ yarn.lock
 /backup
 .vscode
 *.rdb
-#settings.json
-#session.json
+settings.json
+session.json
