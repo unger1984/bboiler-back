@@ -14,7 +14,7 @@ export interface HopDto {
 
 export const getAviableDevices = () => {
 	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
-	return dirs.filter(item => item.isSymbolicLink()).map(item => item.name);
+	return dirs.map(item => item.name);
 };
 
 export class SettingsDto {
