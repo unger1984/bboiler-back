@@ -1,7 +1,6 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import config from '../config';
 import logger from '../logger';
-import exp from 'constants';
 
 export interface PauseDto {
 	temp: number; // температура паузы

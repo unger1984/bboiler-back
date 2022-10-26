@@ -192,6 +192,7 @@ const mainHandler = async () => {
 		case SessionStatus.Error:
 			{
 				// если ошибка, то надо перечитать список датчиков
+				logger.info(getAviableDevices());
 				try {
 					settings.tempDevices = getAviableDevices();
 				} catch (exc) {
