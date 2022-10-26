@@ -12,9 +12,9 @@ export interface HopDto {
 }
 
 const getDevices = () => {
-	logger.info('read devices');
+	console.log('read devices');
 	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
-	logger.info(dirs);
+	console.log(dirs);
 	return dirs.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.').map(item => item.name);
 };
 
