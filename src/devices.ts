@@ -3,15 +3,17 @@ import { DevicesDto } from './dto/DevicesDto';
 
 export const devices = new DevicesDto();
 
-gpiop.promise.setup(18, gpiop.DIR_OUT);
+const TEN_PIN = 12;
+
+gpiop.promise.setup(TEN_PIN, gpiop.DIR_OUT);
 
 export const tenOn = () => {
-	gpiop.promise.write(18, true);
+	gpiop.promise.write(TEN_PIN, true);
 	devices.ten = true;
 };
 
 export const tenOff = () => {
-	gpiop.promise.write(18, false);
+	gpiop.promise.write(TEN_PIN, false);
 	devices.ten = false;
 };
 
