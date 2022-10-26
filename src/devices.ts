@@ -22,7 +22,6 @@ export const tenOn = () => {
 };
 
 export const tenOff = () => {
-	// gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).then(() => {
 	gpiop.promise
 		.write(TEN_PIN, false)
 		.then(() => {
@@ -31,7 +30,6 @@ export const tenOff = () => {
 		.catch(err => {
 			logger.error(err);
 		});
-	// });
 };
 
 export const pumpOn = () => {
@@ -47,11 +45,9 @@ export const pumpOff = () => {
 export const holdTemp = (current: number, min: number, max: number) => {
 	if (current <= min) {
 		// надо подогреть
-		// TODO: включить ТЭН
-		devices.ten = true;
+		tenOn();
 	} else if (current >= max) {
 		// если максимум или больше
-		// TODO: выключить ТЭН
-		devices.ten = false;
+		tenOff();
 	}
 };
