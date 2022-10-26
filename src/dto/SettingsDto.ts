@@ -13,8 +13,7 @@ export interface HopDto {
 
 const getDevices = () => {
 	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
-	console.log(dirs.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.'));
-	return dirs.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.').map(item => item.name);
+	return dirs.filter(item => item.isSymbolicLink()).map(item => item.name);
 };
 
 export class SettingsDto {
