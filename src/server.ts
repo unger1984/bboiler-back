@@ -76,7 +76,7 @@ const mainHandler = async () => {
 		return;
 	}
 
-	if (session.error === SessionStatus.Error) {
+	if (session.status === SessionStatus.Error) {
 		console.log('e2');
 		session.error = SessionStatus.Ready;
 		session.error = '';
