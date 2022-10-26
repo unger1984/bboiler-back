@@ -13,9 +13,9 @@ export const tenOn = () => {
 };
 
 export const tenOff = () => {
-	gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).then(() => {
-		gpiop.promise.write(TEN_PIN, false);
-	});
+	// gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).then(() => {
+	gpiop.promise.write(TEN_PIN, false);
+	// });
 	devices.ten = false;
 };
 
