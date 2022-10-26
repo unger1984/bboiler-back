@@ -4,13 +4,13 @@ import { v4 as uuid } from 'uuid';
 
 import config from './config';
 import logger from './logger';
-import { WsMessage, WsMessageType } from './dto/WsDto';
-import { connectionsPool, sendSession, sendSettings } from './handlers';
-import { readFile } from 'fs/promises';
+import { WsMessage } from './dto/WsDto';
+import { connectionsPool, handleIncommingMessage, sendSession } from './handlers';
 import { SessionDto, SessionStatus } from './dto/SessionDto';
 import { SettingsDto } from './dto/SettingsDto';
 import { devices, holdTemp, pumpOff, pumpOn, tenOff, tenOn } from './devices';
 import moment from 'moment';
+import { existsSync, readFileSync } from 'fs';
 
 const wsserver = async () => {
 	const wsHTTPServer = http.createServer(() => null);
@@ -36,109 +36,7 @@ const wsserver = async () => {
 		connection.on('message', message => {
 			if (message.type === 'utf8') {
 				const msg: WsMessage = JSON.parse(message.utf8Data || '{}');
-				switch (msg.command) {
-					case WsMessageType.Settings:
-						{
-							sendSettings();
-						}
-						break;
-					case WsMessageType.SaveSettings:
-						{
-							const settings = new SettingsDto();
-							settings.copy(msg.data);
-							settings.save();
-							sendSettings();
-						}
-						break;
-					case WsMessageType.Session:
-						{
-							sendSession();
-						}
-						break;
-					case WsMessageType.DoneWater:
-						{
-							const session = new SessionDto();
-							session.status = SessionStatus.Heat;
-							tenOn();
-							pumpOn();
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-					case WsMessageType.DoneMalt:
-						{
-							const session = new SessionDto();
-							session.pause = 1;
-							session.status = SessionStatus.Heat;
-							tenOn();
-							pumpOn();
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-					case WsMessageType.DoneFilter:
-						{
-							const session = new SessionDto();
-							session.status = SessionStatus.Heat;
-							tenOn();
-							session.time = new Date();
-							session.clean = true;
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-					case WsMessageType.DoneHop:
-						{
-							const session = new SessionDto();
-							session.hop++;
-							session.status = SessionStatus.Boiling;
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-					case WsMessageType.Done:
-						{
-							const session = new SessionDto();
-							session.time = null;
-							session.pause = 0;
-							session.hop = 0;
-							session.clean = false;
-							session.status = SessionStatus.Ready;
-							tenOff();
-							pumpOff();
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-					case WsMessageType.Skip:
-						{
-							const session = new SessionDto();
-							if (session.status === SessionStatus.Pause) {
-								session.status = SessionStatus.Heat;
-								tenOn();
-								pumpOn();
-								session.pause++;
-								session.time = new Date();
-							} else if (session.status === SessionStatus.Hop) {
-								session.hop++;
-								session.status = SessionStatus.Boiling;
-							} else if (session.status === SessionStatus.MashOut) {
-								tenOff();
-								pumpOff();
-								session.status = SessionStatus.Filter;
-								session.time = new Date();
-							}
-							session.ten = devices.ten;
-							session.pump = devices.pump;
-							session.save();
-						}
-						break;
-				}
+				handleIncommingMessage(msg);
 			}
 		});
 		connectionsPool[index] = connection;
@@ -146,7 +44,25 @@ const wsserver = async () => {
 };
 
 const mainHandler = async () => {
-	const tempdata = await readFile(config.TEMP_FILE_PATH, { encoding: 'utf-8' });
+	const settings = new SettingsDto();
+	const session = new SessionDto();
+	session.error = '';
+	if (
+		!settings.tempName ||
+		settings.tempName.trim().length <= 0 ||
+		!existsSync(`/sys/bus/w1/devices/${settings.tempName}/w1_slave`)
+	) {
+		session.status = SessionStatus.Error;
+		session.error = 'Не верно задан датчик температуры';
+		session.ten = devices.ten;
+		session.pump = devices.pump;
+		session.current = new Date();
+		session.save();
+		sendSession(session);
+		return;
+	}
+
+	const tempdata = readFileSync(`/sys/bus/w1/devices/${settings.tempName}/w1_slave`, { encoding: 'utf-8' });
 	const tempstrings = tempdata.split('\n').map(item => item.trim());
 	let temp = 0.0;
 	if (tempstrings.length > 1) {
@@ -157,8 +73,6 @@ const mainHandler = async () => {
 		}
 	}
 	/// TODO обработчик ошибки если температура не определилась!
-	const settings = new SettingsDto();
-	const session = new SessionDto();
 	session.temp = temp;
 	switch (session.status) {
 		case SessionStatus.Heat:
@@ -290,11 +204,11 @@ const mainHandler = async () => {
 	session.current = new Date();
 	session.save();
 	sendSession(session);
-	// console.log(session);
 };
 
 wsserver().then(() => {
-	/// TODO все выключить (тэн, насос и т.п)
+	tenOff();
+	pumpOff();
 	logger.info('WS server started');
 	setInterval(mainHandler, 500);
 });

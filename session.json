@@ -1,1 +1,1 @@
-{"temp":100,"time":"2022-10-26T11:31:18.283Z","current":"2022-10-26T12:26:44.629Z","ten":true,"pump":false,"clean":true,"status":"BOILING","pause":2,"hop":1}
+{"temp":0,"time":null,"current":"2022-10-26T13:07:35.209Z","ten":false,"pump":false,"clean":false,"status":"ERROR","pause":0,"hop":0,"error":"Не верно задан датчик температуры"}

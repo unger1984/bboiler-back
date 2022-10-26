@@ -13,6 +13,7 @@ export enum SessionStatus {
 	Boiling = 'BOILING', // кипячение
 	Hop = 'HOP', // засыпь хмеля
 	Done = 'DONE', // варка завершена
+	Error = 'ERROR', // ошибка
 }
 
 export class SessionDto {
@@ -25,6 +26,7 @@ export class SessionDto {
 	status: SessionStatus; // текущий статус
 	pause: number; // номер текущей паузы (от 1)
 	hop: number; // номер текущей зазыпи хмеля
+	error: string;
 
 	constructor() {
 		if (!existsSync(config.SESSION_JSON)) {
@@ -37,6 +39,7 @@ export class SessionDto {
 			this.status = SessionStatus.Ready;
 			this.pause = 0;
 			this.hop = 0;
+			this.error = '';
 			this.save();
 		} else {
 			const saved: SessionDto = JSON.parse(readFileSync(config.SESSION_JSON, { encoding: 'utf-8' }));
@@ -49,6 +52,7 @@ export class SessionDto {
 			this.status = saved.status;
 			this.pause = saved.pause;
 			this.hop = saved.hop;
+			this.error = saved.error;
 		}
 	}
 
