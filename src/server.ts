@@ -76,7 +76,7 @@ const mainHandler = async () => {
 	}
 
 	if (session.status === SessionStatus.Error) {
-		session.error = SessionStatus.Ready;
+		session.status = SessionStatus.Ready;
 		session.error = '';
 		session.save();
 	}
