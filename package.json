@@ -1,0 +1,52 @@
+{
+  "name": "bboiler-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --files ./src/server.ts",
+    "build": "tsc",
+    "lint": "./node_modules/.bin/eslint --fix src",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "dotenv": "^16.0.0",
+    "moment": "^2.29.1",
+    "reflect-metadata": "^0.1.13",
+    "uuid": "^8.3.2",
+    "websocket": "^1.0.34"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^17.0.17",
+    "@types/validator": "^13.7.1",
+    "@types/uuid": "^8.3.4",
+    "@types/websocket": "^1.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.11.0",
+    "@typescript-eslint/parser": "^5.11.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.4",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "**/*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}
