@@ -7,7 +7,7 @@ import logger from './logger';
 import { WsMessage } from './dto/WsDto';
 import { connectionsPool, handleIncommingMessage, sendSession } from './handlers';
 import { SessionDto, SessionStatus } from './dto/SessionDto';
-import { SettingsDto } from './dto/SettingsDto';
+import { getAviableDevices, SettingsDto } from './dto/SettingsDto';
 import { devices, holdTemp, pumpOff, pumpOn, tenOff, tenOn } from './devices';
 import moment from 'moment';
 import { existsSync, readFileSync } from 'fs';
@@ -188,6 +188,20 @@ const mainHandler = async () => {
 			// Ждем пока юзер отфильтруется
 			tenOff();
 			pumpOff();
+			break;
+		case SessionStatus.Error:
+			{
+				// если ошибка, то надо перечитать список датчиков
+				try {
+					settings.tempDevices = getAviableDevices();
+				} catch (exc) {
+					logger.error(exc);
+				}
+				if ((!settings.tempName || settings.tempName.length <= 0) && settings.tempDevices.length > 0) {
+					settings.tempName = settings.tempDevices[0];
+				}
+				settings.save();
+			}
 			break;
 		case SessionStatus.Ready:
 		default:

@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import config from '../config';
 import logger from '../logger';
+import exp from 'constants';
 
 export interface PauseDto {
 	temp: number; // температура паузы
@@ -11,7 +12,7 @@ export interface HopDto {
 	time: number;
 }
 
-const getDevices = () => {
+export const getAviableDevices = () => {
 	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
 	return dirs.filter(item => item.isSymbolicLink()).map(item => item.name);
 };
@@ -45,7 +46,7 @@ export class SettingsDto {
 			this.tempDiff = 1.5;
 			this.tempDevices = [];
 			try {
-				this.tempDevices = getDevices();
+				this.tempDevices = getAviableDevices();
 			} catch (err) {
 				logger.error(err);
 			}
@@ -59,14 +60,6 @@ export class SettingsDto {
 		} else {
 			const saved: SettingsDto = JSON.parse(readFileSync(config.SETTINGS_JSON, { encoding: 'utf-8' }));
 			this.copy(saved);
-			try {
-				this.tempDevices = getDevices();
-			} catch (err) {
-				logger.error(err);
-			}
-			if ((!this.tempName || this.tempName.length <= 0) && this.tempDevices.length > 0) {
-				this.tempName = this.tempDevices[0];
-			}
 		}
 	}
 
