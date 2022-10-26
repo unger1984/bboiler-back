@@ -49,6 +49,7 @@ const mainHandler = async () => {
 	session.error = '';
 	const file = `/sys/bus/w1/devices/${settings.tempName}/w1_slave`;
 	if (!settings.tempName || settings.tempName.trim().length <= 0 || !existsSync(file)) {
+		console.log('e1');
 		session.status = SessionStatus.Error;
 		session.error = `Не верно задан датчик температуры ${file}`;
 		session.ten = devices.ten;
@@ -76,10 +77,11 @@ const mainHandler = async () => {
 	}
 
 	if (session.error === SessionStatus.Error) {
+		console.log('e2');
 		session.error = SessionStatus.Ready;
 		session.error = '';
 	}
-
+	console.log('e3');
 	const tempdata = readFileSync(`/sys/bus/w1/devices/${settings.tempName}/w1_slave`, { encoding: 'utf-8' });
 	const tempstrings = tempdata.split('\n').map(item => item.trim());
 	let temp = 0.0;
