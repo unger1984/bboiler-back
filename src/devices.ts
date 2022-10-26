@@ -1,14 +1,17 @@
 import gpiop from 'rpi-gpio';
 import { DevicesDto } from './dto/DevicesDto';
+import logger from './logger';
 
 export const devices = new DevicesDto();
 
 const TEN_PIN = 12;
 
+gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).catch(err => {
+	logger.error(err);
+});
+
 export const tenOn = () => {
-	gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).then(() => {
-		gpiop.promise.write(TEN_PIN, true);
-	});
+	gpiop.promise.write(TEN_PIN, true);
 	devices.ten = true;
 };
 
