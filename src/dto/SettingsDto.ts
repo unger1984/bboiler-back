@@ -12,9 +12,7 @@ export interface HopDto {
 }
 
 const getDevices = () => {
-	console.log('read devices');
 	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
-	console.log(dirs);
 	return dirs.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.').map(item => item.name);
 };
 
@@ -67,6 +65,7 @@ export class SettingsDto {
 				logger.error(err);
 			}
 		}
+		logger.info(this.tempDevices);
 	}
 
 	public copy(saved: SettingsDto) {
