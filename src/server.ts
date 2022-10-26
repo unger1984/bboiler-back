@@ -11,6 +11,8 @@ import { getAviableDevices, SettingsDto } from './dto/SettingsDto';
 import { devices, holdTemp, pumpOff, pumpOn, tenOff, tenOn } from './devices';
 import moment from 'moment';
 import { existsSync, readFileSync } from 'fs';
+import { constants } from 'os';
+import errno = module;
 
 const wsserver = async () => {
 	const wsHTTPServer = http.createServer(() => null);
@@ -48,7 +50,6 @@ const mainHandler = async () => {
 	const session = new SessionDto();
 	session.error = '';
 	const file = `/sys/bus/w1/devices/${settings.tempName}/w1_slave`;
-	console.log(file, !settings.tempName, settings.tempName.trim().length, !existsSync(file));
 	if (!settings.tempName || settings.tempName.trim().length <= 0 || !existsSync(file)) {
 		session.status = SessionStatus.Error;
 		session.error = `Не верно задан датчик температуры ${file}`;
@@ -74,6 +75,11 @@ const mainHandler = async () => {
 		settings.save();
 
 		return;
+	}
+
+	if (session.error === SessionStatus.Error) {
+		session.error = SessionStatus.Ready;
+		session.error = '';
 	}
 
 	const tempdata = readFileSync(`/sys/bus/w1/devices/${settings.tempName}/w1_slave`, { encoding: 'utf-8' });
