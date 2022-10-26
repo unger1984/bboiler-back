@@ -3,7 +3,7 @@ import { DevicesDto } from './dto/DevicesDto';
 
 export const devices = new DevicesDto();
 
-const TEN_PIN = 18;
+const TEN_PIN = 12;
 
 export const tenOn = () => {
 	gpiop.promise.setup(TEN_PIN, gpiop.DIR_OUT).then(() => {
