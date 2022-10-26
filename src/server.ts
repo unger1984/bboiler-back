@@ -201,6 +201,9 @@ const mainHandler = async () => {
 					settings.tempName = settings.tempDevices[0];
 				}
 				settings.save();
+				if (settings.tempName && settings.tempName.length > 0 && settings.tempDevices.length > 0) {
+					session.status = SessionStatus.Ready;
+				}
 			}
 			break;
 		case SessionStatus.Ready:
