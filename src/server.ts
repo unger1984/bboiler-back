@@ -48,6 +48,7 @@ const mainHandler = async () => {
 	const session = new SessionDto();
 	session.error = '';
 	const file = `/sys/bus/w1/devices/${settings.tempName}/w1_slave`;
+	console.log(!settings.tempName, settings.tempName.trim().length, !existsSync(file));
 	if (!settings.tempName || settings.tempName.trim().length <= 0 || !existsSync(file)) {
 		session.status = SessionStatus.Error;
 		session.error = `Не верно задан датчик температуры ${file}`;
