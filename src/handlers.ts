@@ -125,5 +125,41 @@ export const handleIncommingMessage = (msg: WsMessage) => {
 				session.save();
 			}
 			break;
+		case WsMessageType.TenOn:
+			{
+				const session = new SessionDto();
+				tenOn();
+				session.ten = devices.ten;
+				session.pump = devices.pump;
+				session.save();
+			}
+			break;
+		case WsMessageType.TenOff:
+			{
+				const session = new SessionDto();
+				tenOff();
+				session.ten = devices.ten;
+				session.pump = devices.pump;
+				session.save();
+			}
+			break;
+		case WsMessageType.PumpOn:
+			{
+				const session = new SessionDto();
+				pumpOn();
+				session.ten = devices.ten;
+				session.pump = devices.pump;
+				session.save();
+			}
+			break;
+		case WsMessageType.PumpOff:
+			{
+				const session = new SessionDto();
+				pumpOff();
+				session.ten = devices.ten;
+				session.pump = devices.pump;
+				session.save();
+			}
+			break;
 	}
 };

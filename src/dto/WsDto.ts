@@ -16,6 +16,10 @@ export enum WsMessageType {
 	DoneHop = 'DONE_HOP',
 	Done = 'DONE',
 	Skip = 'SKIP',
+	TenOn = 'TEN_ON',
+	TenOff = 'TEN_OFF',
+	PumpOn = 'PUMP_ON',
+	PumpOff = 'PUMP_OFF',
 }
 
 export class WsMessage {
