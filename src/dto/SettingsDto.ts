@@ -11,6 +11,12 @@ export interface HopDto {
 	time: number;
 }
 
+const getDevices = () => {
+	const dirs = readdirSync('/sys/bus/w1/devices', { withFileTypes: true });
+	logger.info(dirs);
+	return dirs.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.').map(item => item.name);
+};
+
 export class SettingsDto {
 	tempName: string; // название датчика
 	tempDevices: string[]; // список датчиков
@@ -40,9 +46,7 @@ export class SettingsDto {
 			this.tempDiff = 1.5;
 			this.tempDevices = [];
 			try {
-				this.tempDevices = readdirSync('/sys/bus/w1/devices', { withFileTypes: true })
-					.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.')
-					.map(item => item.name);
+				this.tempDevices = getDevices();
 			} catch (err) {
 				logger.error(err);
 			}
@@ -57,9 +61,7 @@ export class SettingsDto {
 			const saved: SettingsDto = JSON.parse(readFileSync(config.SETTINGS_JSON, { encoding: 'utf-8' }));
 			this.copy(saved);
 			try {
-				this.tempDevices = readdirSync('/sys/bus/w1/devices', { withFileTypes: true })
-					.filter(item => item.isDirectory() && item.name !== '..' && item.name !== '.')
-					.map(item => item.name);
+				this.tempDevices = getDevices();
 			} catch (err) {
 				logger.error(err);
 			}
