@@ -56,6 +56,20 @@ const mainHandler = async () => {
 		session.current = new Date();
 		session.save();
 		sendSession(session);
+
+		try {
+			settings.tempDevices = getAviableDevices();
+		} catch (exc) {
+			logger.error(exc);
+		}
+		if ((!settings.tempName || settings.tempName.length <= 0) && settings.tempDevices.length > 0) {
+			settings.tempName = settings.tempDevices[0];
+		}
+		if (settings.tempName && settings.tempName.length > 0 && settings.tempDevices.length > 0) {
+			session.status = SessionStatus.Ready;
+		}
+		settings.save();
+
 		return;
 	}
 
@@ -188,24 +202,6 @@ const mainHandler = async () => {
 			// Ждем пока юзер отфильтруется
 			tenOff();
 			pumpOff();
-			break;
-		case SessionStatus.Error:
-			{
-				// если ошибка, то надо перечитать список датчиков
-				logger.info(getAviableDevices());
-				try {
-					settings.tempDevices = getAviableDevices();
-				} catch (exc) {
-					logger.error(exc);
-				}
-				if ((!settings.tempName || settings.tempName.length <= 0) && settings.tempDevices.length > 0) {
-					settings.tempName = settings.tempDevices[0];
-				}
-				settings.save();
-				if (settings.tempName && settings.tempName.length > 0 && settings.tempDevices.length > 0) {
-					session.status = SessionStatus.Ready;
-				}
-			}
 			break;
 		case SessionStatus.Ready:
 		default:
