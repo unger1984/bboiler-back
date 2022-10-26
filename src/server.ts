@@ -67,6 +67,8 @@ const mainHandler = async () => {
 		}
 		if (settings.tempName && settings.tempName.length > 0 && settings.tempDevices.length > 0) {
 			session.status = SessionStatus.Ready;
+			session.error = '';
+			session.save();
 		}
 		settings.save();
 
@@ -221,5 +223,5 @@ wsserver().then(() => {
 	tenOff();
 	pumpOff();
 	logger.info('WS server started');
-	setInterval(mainHandler, 500);
+	setInterval(mainHandler, 1000);
 });
