@@ -102,6 +102,7 @@ const mainHandler = async () => {
 						// достигли температуры засыпи
 						// надо выключить ТЭН и перейти в режим засыпи
 						tenOff();
+						pumpOff();
 						session.status = SessionStatus.Malt;
 						session.time = new Date();
 					}
