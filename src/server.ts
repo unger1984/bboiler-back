@@ -198,6 +198,10 @@ const mainHandler = async () => {
 		case SessionStatus.Done:
 			{
 				// Надо выключить все
+				session.time = null;
+				session.pause = 0;
+				session.hop = 0;
+				session.clean = false;
 				tenOff();
 				pumpOff();
 			}
@@ -214,6 +218,10 @@ const mainHandler = async () => {
 		case SessionStatus.Ready:
 		default:
 			/// Ждем пока юзер включит варку
+			session.time = null;
+			session.pause = 0;
+			session.hop = 0;
+			session.clean = false;
 			tenOff();
 			pumpOff();
 			break;
