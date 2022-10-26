@@ -1,14 +1,17 @@
+import gpiop from 'rpi-gpio';
 import { DevicesDto } from './dto/DevicesDto';
 
 export const devices = new DevicesDto();
 
+gpiop.promise.setup(18, gpiop.DIR_OUT);
+
 export const tenOn = () => {
-	// TODO: включить ТЭН
+	gpiop.promise.write(18, true);
 	devices.ten = true;
 };
 
 export const tenOff = () => {
-	// TODO: выключить ТЭН
+	gpiop.promise.write(18, false);
 	devices.ten = false;
 };
 
