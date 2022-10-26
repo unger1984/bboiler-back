@@ -11,15 +11,27 @@ gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).catch(err => {
 });
 
 export const tenOn = () => {
-	gpiop.promise.write(TEN_PIN, true);
-	devices.ten = true;
+	gpiop.promise
+		.write(TEN_PIN, true)
+		.then(() => {
+			devices.ten = true;
+		})
+		.catch(err => {
+			logger.error(err);
+		});
 };
 
 export const tenOff = () => {
 	// gpiop.promise.setup(TEN_PIN, gpiop.promise.DIR_OUT).then(() => {
-	gpiop.promise.write(TEN_PIN, false);
+	gpiop.promise
+		.write(TEN_PIN, false)
+		.then(() => {
+			devices.ten = false;
+		})
+		.catch(err => {
+			logger.error(err);
+		});
 	// });
-	devices.ten = false;
 };
 
 export const pumpOn = () => {
