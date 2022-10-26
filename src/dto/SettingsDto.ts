@@ -65,7 +65,6 @@ export class SettingsDto {
 				logger.error(err);
 			}
 		}
-		logger.info(this.tempDevices);
 	}
 
 	public copy(saved: SettingsDto) {

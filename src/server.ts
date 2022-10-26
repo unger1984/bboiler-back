@@ -47,13 +47,10 @@ const mainHandler = async () => {
 	const settings = new SettingsDto();
 	const session = new SessionDto();
 	session.error = '';
-	if (
-		!settings.tempName ||
-		settings.tempName.trim().length <= 0 ||
-		!existsSync(`/sys/bus/w1/devices/${settings.tempName}/w1_slave`)
-	) {
+	const file = `/sys/bus/w1/devices/${settings.tempName}/w1_slave`;
+	if (!settings.tempName || settings.tempName.trim().length <= 0 || !existsSync(file)) {
 		session.status = SessionStatus.Error;
-		session.error = 'Не верно задан датчик температуры';
+		session.error = `Не верно задан датчик температуры ${file}`;
 		session.ten = devices.ten;
 		session.pump = devices.pump;
 		session.current = new Date();
