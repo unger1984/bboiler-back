@@ -64,6 +64,9 @@ export class SettingsDto {
 			} catch (err) {
 				logger.error(err);
 			}
+			if ((!this.tempName || this.tempName.length <= 0) && this.tempDevices.length > 0) {
+				this.tempName = this.tempDevices[0];
+			}
 		}
 	}
 
