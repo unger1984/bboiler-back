@@ -71,6 +71,8 @@ export const handleIncommingMessage = (msg: WsMessage) => {
 			if (!list.includes(settings.tempName)) {
 				settings.tempName = list[0];
 				devices.temp.setName(settings.tempName);
+			} else {
+				devices.temp.setName(settings.tempName);
 			}
 			settings.devices = list;
 			updateSettings(settings);
