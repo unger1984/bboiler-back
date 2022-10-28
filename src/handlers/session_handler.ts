@@ -29,6 +29,9 @@ export const handleTemp = (session: Session, temp: number): Session => {
 					// если это температура кипячения
 					session.status = SessionStatus.Boiling;
 					session.minutes = settings.timeBoiling;
+					if (!session.manualTen) {
+						devices.ten.on();
+					}
 					session.lastTime = new Date();
 				} else if (session.tempMax > 0) {
 					// значит это температура паузы
