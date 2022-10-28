@@ -2,6 +2,7 @@ import { createEvent, createStore } from 'effector';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import config from '../config';
 import { sendSettings } from '../handlers/ws_hendler';
+import { devices } from '../devices/devices';
 
 export interface PauseType {
 	time: number;
@@ -57,5 +58,8 @@ $settings.map(settings => {
 	if (settings) {
 		sendSettings(settings);
 		writeFileSync(config.SETTINGS_JSON, JSON.stringify(settings), { encoding: 'utf-8' });
+		if (settings.tempName !== devices.temp.name) {
+			devices.temp.setName(settings.tempName);
+		}
 	}
 });
