@@ -18,3 +18,4 @@ yarn.lock
 *.rdb
 settings.json
 session.json
+temp.txt

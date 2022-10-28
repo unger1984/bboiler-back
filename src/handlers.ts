@@ -1,165 +1,79 @@
-import { WsConnectionsPool, WsMessage, WsMessageType } from './dto/WsDto';
-import { SessionDto, SessionStatus } from './dto/SessionDto';
-import { SettingsDto } from './dto/SettingsDto';
-import { devices, pumpOff, pumpOn, tenOff, tenOn } from './devices';
-
-export const connectionsPool: WsConnectionsPool = {};
-
-export const sendWsMessage = (message: WsMessage) => {
-	for (const connection of Object.values(connectionsPool)) {
-		const msg = JSON.stringify(message);
-		connection.sendUTF(msg);
-	}
-};
-
-export const sendSession = (session: SessionDto | null = null) => {
-	const sess = session ? session : new SessionDto();
-	sendWsMessage(new WsMessage(WsMessageType.Session, sess));
-};
-
-export const sendSettings = (settings: SettingsDto | null = null) => {
-	const set = settings ? settings : new SettingsDto();
-	sendWsMessage(new WsMessage(WsMessageType.Settings, set));
-};
+import { sendSession, sendSettings, WsMessage, WsMessageType } from './handlers/ws_hendler';
+import {
+	$session,
+	cancel,
+	done,
+	setDoneFilter,
+	setDoneHop,
+	setDoneMalt,
+	setDoneWater,
+	setManualPump,
+	setManualTen,
+	skip,
+} from './effects/session';
+import { $settings, Settings, updateSettings } from './effects/settings';
+import { devices } from './devices/devices';
+import { getAvailableTempDevices } from './utils/utils';
 
 export const handleIncommingMessage = (msg: WsMessage) => {
 	switch (msg.command) {
-		case WsMessageType.Settings:
-			{
-				sendSettings();
-			}
+		case WsMessageType.SETTINGS:
+			sendSettings($settings.getState());
 			break;
-		case WsMessageType.SaveSettings:
-			{
-				const settings = new SettingsDto();
-				settings.copy(msg.data);
-				settings.save();
-				sendSettings();
-			}
+		case WsMessageType.SAVE_SETTINGS:
+			updateSettings(msg.data as Settings);
 			break;
-		case WsMessageType.Session:
-			{
-				sendSession();
-			}
+		case WsMessageType.SESSION:
+			sendSession($session.getState());
 			break;
-		case WsMessageType.DoneWater:
-			{
-				const session = new SessionDto();
-				session.status = SessionStatus.Heat;
-				tenOn();
-				pumpOn();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.MANUAL_TEN:
+			setManualTen();
 			break;
-		case WsMessageType.DoneMalt:
-			{
-				const session = new SessionDto();
-				session.pause = 1;
-				session.status = SessionStatus.Heat;
-				tenOn();
-				pumpOn();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.MANUAL_PUMP:
+			setManualPump();
 			break;
-		case WsMessageType.DoneFilter:
-			{
-				const session = new SessionDto();
-				session.status = SessionStatus.Heat;
-				tenOn();
-				session.time = new Date();
-				session.clean = true;
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.TEN_ON:
+			devices.ten.on();
 			break;
-		case WsMessageType.DoneHop:
-			{
-				const session = new SessionDto();
-				session.hop++;
-				session.status = SessionStatus.Boiling;
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.TEN_OFF:
+			devices.ten.off();
 			break;
-		case WsMessageType.Done:
-			{
-				const session = new SessionDto();
-				session.time = null;
-				session.pause = 0;
-				session.hop = 0;
-				session.clean = false;
-				session.status = SessionStatus.Ready;
-				tenOff();
-				pumpOff();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.PUMP_ON:
+			devices.pump.on();
 			break;
-		case WsMessageType.Skip:
-			{
-				const session = new SessionDto();
-				if (session.status === SessionStatus.Pause) {
-					session.status = SessionStatus.Heat;
-					tenOn();
-					pumpOn();
-					session.pause++;
-					session.time = new Date();
-				} else if (session.status === SessionStatus.Hop) {
-					session.hop++;
-					session.status = SessionStatus.Boiling;
-				} else if (session.status === SessionStatus.MashOut) {
-					tenOff();
-					pumpOff();
-					session.status = SessionStatus.Filter;
-					session.time = new Date();
-				}
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.PUMP_OFF:
+			devices.pump.off();
 			break;
-		case WsMessageType.TenOn:
-			{
-				const session = new SessionDto();
-				tenOn();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.DONE_WATER:
+			setDoneWater();
 			break;
-		case WsMessageType.TenOff:
-			{
-				const session = new SessionDto();
-				tenOff();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.DONE_MALT:
+			setDoneMalt();
 			break;
-		case WsMessageType.PumpOn:
-			{
-				const session = new SessionDto();
-				pumpOn();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
-			}
+		case WsMessageType.DONE_FILTER:
+			setDoneFilter();
 			break;
-		case WsMessageType.PumpOff:
-			{
-				const session = new SessionDto();
-				pumpOff();
-				session.ten = devices.ten;
-				session.pump = devices.pump;
-				session.save();
+		case WsMessageType.DONE_HOP:
+			setDoneHop();
+			break;
+		case WsMessageType.SKIP:
+			skip();
+			break;
+		case WsMessageType.CANCEL:
+			cancel();
+			break;
+		case WsMessageType.DONE:
+			done();
+			break;
+		case WsMessageType.REFRESH_SETTINGS:
+			const settings = $settings.getState();
+			const list = getAvailableTempDevices();
+			if (!list.includes(settings.tempName)) {
+				settings.tempName = list[0];
+				devices.temp.setName(settings.tempName);
 			}
+			settings.devices = list;
+			updateSettings(settings);
 			break;
 	}
 };
