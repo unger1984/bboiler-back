@@ -11,7 +11,7 @@ import {
 	setManualTen,
 	skip,
 } from './effects/session';
-import { $settings, Settings, updateSettings } from './effects/settings';
+import { $settings, devices, Settings, updateSettings } from './effects/settings';
 import { getAvailableTempDevices } from './utils/utils';
 
 export const handleIncommingMessage = (msg: WsMessage) => {
