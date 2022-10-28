@@ -2,7 +2,7 @@ import { createEvent, createStore } from 'effector';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import config from '../config';
 import { sendSettings } from '../handlers/ws_hendler';
-import { devices } from '../devices/devices';
+import { Devices } from '../devices/devices';
 
 export interface PauseType {
 	time: number;
@@ -52,6 +52,8 @@ export const loadSettings = (): Settings => {
 export const updateSettings = createEvent<Settings>('update settings');
 
 export const $settings = createStore<Settings>(loadSettings()).on(updateSettings, (__, settings) => settings);
+
+export const devices = new Devices();
 
 $settings.map(settings => {
 	// logger.debug(settings);

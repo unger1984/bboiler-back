@@ -3,7 +3,7 @@ import { TenProvider } from './ten_provider';
 import { PumpProvider } from './pump_provider';
 import { $settings, updateSettings } from '../effects/settings';
 
-class Devices {
+export class Devices {
 	temp: TempProvider;
 	ten: TenProvider;
 	pump: PumpProvider;
@@ -33,5 +33,3 @@ class Devices {
 		}
 	}
 }
-
-export const devices = new Devices();

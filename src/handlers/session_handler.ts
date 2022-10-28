@@ -1,8 +1,7 @@
 import moment from 'moment/moment';
 
-import { $settings } from '../effects/settings';
+import { $settings, devices } from '../effects/settings';
 import { Session, SessionStatus } from '../effects/session';
-import { devices } from '../devices/devices';
 
 /**
  * Обработчик показаний температуры

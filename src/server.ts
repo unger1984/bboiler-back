@@ -7,7 +7,7 @@ import logger from './logger';
 import { setTemp, setTime } from './effects/session';
 import { connectionsPool, WsMessage } from './handlers/ws_hendler';
 import { handleIncommingMessage } from './handlers';
-import { devices } from './devices/devices';
+import { devices } from './effects/settings';
 
 const wsserver = async () => {
 	const wsHTTPServer = http.createServer(() => null);

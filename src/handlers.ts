@@ -12,7 +12,6 @@ import {
 	skip,
 } from './effects/session';
 import { $settings, Settings, updateSettings } from './effects/settings';
-import { devices } from './devices/devices';
 import { getAvailableTempDevices } from './utils/utils';
 
 export const handleIncommingMessage = (msg: WsMessage) => {
