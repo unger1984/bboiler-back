@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import config from '../config';
 import { getAvailableTempDevices } from '../utils/utils';
+import logger from '../logger';
 
 export class TempProvider {
 	name: string;
@@ -16,6 +17,7 @@ export class TempProvider {
 	}
 
 	public setName(name: string) {
+		logger.info(`SET ${this.name}`);
 		this.name = name;
 		if (this.idle) {
 			clearInterval(this.idle);
@@ -26,6 +28,7 @@ export class TempProvider {
 	}
 
 	public getTemp(): number {
+		logger.info(this.name);
 		const filePath = this.name === 'Test' ? config.TEMP_TEST_FILE : `/sys/bus/w1/devices/${this.name}/w1_slave`;
 		const tempdata = readFileSync(filePath, { encoding: 'utf-8' });
 		const tempstrings = tempdata.split('\n').map(item => item.trim());
